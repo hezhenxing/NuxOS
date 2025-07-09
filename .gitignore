@@ -1,0 +1,7 @@
+*~
+*.swp
+.vscode/
+result
+*.qcow2
+*-sav
+*-sav[0-9]

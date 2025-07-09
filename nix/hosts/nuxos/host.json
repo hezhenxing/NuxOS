@@ -1,0 +1,9 @@
+{
+  "system": "x86_64-linux",
+  "profile": "develop",
+  "language": "zh_CN.UTF-8",
+  "timezone": "Asia/Shanghai",
+  "autos": [
+    "zip"
+  ]
+}
