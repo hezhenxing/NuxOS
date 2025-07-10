@@ -2,12 +2,20 @@
   inputs,
   pkgs,
   host,
+  src,
   ...
 }:
 {
   system = {
     stateVersion = "25.11";
     nixos.label = "NuxOS";
+
+    # Copy NuxOS configuration to /etc/nuxos if needed.
+    activationScripts.nuxos.text = ''
+      if [[ ! -e /etc/nuxos ]]; then
+        cp -r "${src}" /etc/nuxos
+      fi
+    '';
   };
   fileSystems = host.fileSystems;
   environment = {

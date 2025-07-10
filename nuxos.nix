@@ -3,6 +3,7 @@
   config,
   lib,
   flakelight,
+  src,
   ...
 }:
 let
@@ -139,6 +140,7 @@ let
           host
           users
           nuxos
+          src
           ;
       };
       modules = (attrValues coreModules) ++ (attrValues hostModules);

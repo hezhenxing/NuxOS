@@ -17,27 +17,34 @@
       url = "github:hezhenxing/nux";
     };
   };
-  outputs = inputs @ {
-    nixpkgs,
-    flakelight,
-    home-manager,
-    stylix,
-    nux,
-    ...
-  }:
+  outputs =
+    inputs@{
+      nixpkgs,
+      flakelight,
+      home-manager,
+      stylix,
+      nux,
+      ...
+    }:
     flakelight ./. {
       inherit inputs;
       imports = [
         flakelight.flakelightModules.extendFlakelight
         ./nuxos.nix
       ];
-      flakelightModule = {lib, ...}: {
-        imports = [./nuxos.nix];
-        inputs.home-manager = lib.mkDefault home-manager;
-        inputs.stylix = lib.mkDefault stylix;
-        inputs.nux = lib.mkDefault nux;
-        nixpkgs.config = {allowUnfree = true;};
+      flakelightModule =
+        { lib, ... }:
+        {
+          imports = [ ./nuxos.nix ];
+          inputs.home-manager = lib.mkDefault home-manager;
+          inputs.stylix = lib.mkDefault stylix;
+          inputs.nux = lib.mkDefault nux;
+          nixpkgs.config = {
+            allowUnfree = true;
+          };
+        };
+      nixpkgs.config = {
+        allowUnfree = true;
       };
-      nixpkgs.config = {allowUnfree = true;};
     };
 }
