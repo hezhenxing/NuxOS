@@ -7,38 +7,45 @@
   host,
   users,
   ...
-}: let
+}:
+let
   inherit (builtins) hasAttr mapAttrs;
-  isModule = name:
-    hasAttr name nuxos.homeModules;
-  isService = name:
-    hasAttr name options.services
-    && hasAttr "enable" options.services.${name};
-  isProgram = name:
-    hasAttr name options.programs;
+  isModule = name: hasAttr name nuxos.homeModules;
+  isService = name: hasAttr name options.services && hasAttr "enable" options.services.${name};
+  isProgram = name: hasAttr name options.programs;
   mkModule = name: nuxos.homeModules.${name};
-  mkService = name: {services.${name}.enable = true;};
-  mkProgram = name: {programs.${name}.enable = true;};
-  mkPackage = name: {home.packages = [pkgs.${name}];};
-  mkAuto = name:
-    if isModule name
-    then mkModule name
-    else if isService name
-    then mkService name
-    else if isProgram name
-    then mkProgram name
-    else mkPackage name;
-  hmUser = username: usercfg: let
-    autos = map mkAuto usercfg.autos;
-  in {
-    home = {
-      inherit username;
-      homeDirectory = "/home/${username}";
-    };
-    imports = autos;
+  mkService = name: { services.${name}.enable = true; };
+  mkProgram = name: { programs.${name}.enable = true; };
+  mkPackage = name: {
+    home.packages = [
+      pkgs.${name} or pkgs.kdePackages.${name} or pkgs.xfce.${name} or pkgs.haskellPackages.${name}
+    ];
   };
+  mkAuto =
+    name:
+    if isModule name then
+      mkModule name
+    else if isService name then
+      mkService name
+    else if isProgram name then
+      mkProgram name
+    else
+      mkPackage name;
+  hmUser =
+    username: usercfg:
+    let
+      autos = map mkAuto usercfg.autos;
+    in
+    {
+      home = {
+        inherit username;
+        homeDirectory = "/home/${username}";
+      };
+      imports = autos;
+    };
   hmUsers = mapAttrs hmUser users;
-in {
+in
+{
   imports = [
     inputs.home-manager.nixosModules.home-manager
   ];
@@ -47,7 +54,13 @@ in {
     useUserPackages = true;
     useGlobalPkgs = true;
     extraSpecialArgs = {
-      inherit inputs nuxos hostname host users;
+      inherit
+        inputs
+        nuxos
+        hostname
+        host
+        users
+        ;
     };
     sharedModules = [
       {
