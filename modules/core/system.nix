@@ -21,7 +21,7 @@
   environment = {
     variables = {
       NUXOS = "true";
-      NUXOS_VERSION = "0.1";
+      NUXOS_VERSION = "0.4";
     };
     shells = with pkgs; [
       bash

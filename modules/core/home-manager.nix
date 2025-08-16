@@ -1,4 +1,5 @@
 {
+  lib,
   inputs,
   nuxos,
   pkgs,
@@ -9,28 +10,50 @@
   ...
 }:
 let
-  inherit (builtins) hasAttr mapAttrs;
-  isModule = name: hasAttr name nuxos.homeModules;
-  isService = name: hasAttr name options.services && hasAttr "enable" options.services.${name};
-  isProgram = name: hasAttr name options.programs;
-  mkModule = name: nuxos.homeModules.${name};
-  mkService = name: { services.${name}.enable = true; };
-  mkProgram = name: { programs.${name}.enable = true; };
-  mkPackage = name: {
-    home.packages = [
-      pkgs.${name} or pkgs.kdePackages.${name} or pkgs.xfce.${name} or pkgs.haskellPackages.${name}
-    ];
-  };
+  inherit (builtins)
+    hasAttr
+    mapAttrs
+    ;
+  inherit (lib)
+    attrByPath
+    importJSON
+    setAttrByPath
+    splitString
+    ;
+  opts = importJSON nuxos.homeOptionsJson;
+  packages = importJSON nuxos.packagesJson;
+  isMod = name: hasAttr name nuxos.homeModules;
+  isOpt = name: hasAttr name opts;
+  isPkg = name: hasAttr name packages;
+  mkMod = name: nuxos.homeModules.${name};
+  mkOpt =
+    name:
+    let
+      optname = opts.${name};
+      parts = splitString "." optname;
+    in
+    setAttrByPath parts { enable = true; };
+  mkPkg =
+    name:
+    let
+      pkgname = packages.${name};
+      parts = splitString "." pkgname;
+    in
+    {
+      home.packages = [
+        (attrByPath parts null pkgs)
+      ];
+    };
   mkAuto =
     name:
-    if isModule name then
-      mkModule name
-    else if isService name then
-      mkService name
-    else if isProgram name then
-      mkProgram name
+    if isMod name then
+      mkMod name
+    else if isOpt name then
+      mkOpt name
+    else if isPkg name then
+      mkPkg name
     else
-      mkPackage name;
+      throw "invalid home auto name: ${name}";
   hmUser =
     username: usercfg:
     let

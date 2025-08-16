@@ -1,6 +1,7 @@
 *~
 *.swp
 .vscode/
+.direnv/
 result
 *.qcow2
 *-sav

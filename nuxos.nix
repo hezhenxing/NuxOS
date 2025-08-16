@@ -40,6 +40,9 @@ let
   hostsDir = config.nixDir + /hosts;
   usersDir = config.nixDir + /users;
   wallpapersDir = ./wallpapers;
+  optionsJson = ./options.json;
+  packagesJson = ./packages.json;
+  homeOptionsJson = ./home-options.json;
   defaultHost = {
     system = "x86_64-linux";
     autos = [
@@ -54,6 +57,9 @@ let
       homeModules
       profiles
       wallpapersDir
+      optionsJson
+      packagesJson
+      homeOptionsJson
       ;
   };
   fromUser =

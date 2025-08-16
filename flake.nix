@@ -46,5 +46,44 @@
       nixpkgs.config = {
         allowUnfree = true;
       };
+      devShell.packages =
+        pkgs:
+        let
+          rev = nixpkgs.rev;
+          homeOptions = "${home-manager.packages.x86_64-linux.docs-json.outPath}/share/doc/home-manager/options.json";
+          update = pkgs.writeShellScriptBin "update" ''
+            find_flake_root() {
+              while true; do
+                if [[ -f flake.nix ]]; then
+                  echo "$PWD"
+                  return
+                elif [[ "$PWD" = "/" ]]; then
+                  echo "ERROR: Not in a flake directory"
+                else
+                  cd ..
+                fi
+              done
+            }
+            find_flake_root
+            rm -f options.json home-options.json packages.json
+            echo "Fetching sources.json"
+            dir=$(curl -sL https://github.com/wamserma/flake-programs-sqlite/raw/refs/heads/main/sources.json | jq -r '."${rev}".url | rtrimstr("/nixexprs.tar.xz")')
+            url=https://releases.nixos.org$dir
+            options_url=$url/options.json.br
+            packages_url=$url/packages.json.br
+            echo "Fetching and generating options.json"
+            curl -sL $options_url | brotli -dc | jq -f scripts/options.jq > options.json
+            echo "Reading and generating home-options.json"
+            jq -f scripts/options.jq ${homeOptions}  > home-options.json
+            echo "Fetching and generating packages.json"
+            curl -sL $packages_url | brotli -dc | jq -f scripts/packages.jq > packages.json
+          '';
+        in
+        with pkgs;
+        [
+          curl
+          jq
+          update
+        ];
     };
 }
