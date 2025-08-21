@@ -1,6 +1,7 @@
 { nuxos, ... }:
 {
   imports = with nuxos.nixosModules; [
+    polkit
     sddm
     xserver
   ];

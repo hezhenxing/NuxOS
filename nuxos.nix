@@ -28,15 +28,13 @@ let
     name: attrs: value:
     if hasAttr name attrs then getAttr name attrs else value;
   coreModulesDir = modules/core;
-  # Builtin nixos/home/profile modules directory
+  # Builtin nixos/home modules directory
   nixosModulesDir = modules/nixos;
   homeModulesDir = modules/home;
-  profilesDir = modules/profiles;
   coreModules = importDir coreModulesDir;
-  # Merge builtin nixos/home/profile modules with config modules
+  # Merge builtin nixos/home modules with config modules
   nixosModules = importDir nixosModulesDir // config.nixosModules;
   homeModules = importDir homeModulesDir // config.homeModules;
-  profiles = importDir profilesDir // config.profiles;
   hostsDir = config.nixDir + /hosts;
   usersDir = config.nixDir + /users;
   wallpapersDir = ./wallpapers;
@@ -55,7 +53,6 @@ let
       importDir
       nixosModules
       homeModules
-      profiles
       wallpapersDir
       optionsJson
       packagesJson
@@ -81,48 +78,13 @@ let
     };
   fromUsers = users: mapAttrs fromUser users;
   fromHost =
-    profiles: users': hostname: hostcfg:
+    users': hostname: hostcfg:
     let
-      profileName = hostcfg.profile or "";
-      profile' = getAttrOr profileName profiles { };
-      profile = fixProfile profiles profile';
-      fixProfile =
-        profiles: profile:
-        let
-          baseName = profile.base or "";
-          base = getAttrOr baseName profiles { };
-          mergeProfile =
-            base: profile:
-            let
-              mergedHost =
-                (evalModules {
-                  modules = [
-                    hostProfileOptions
-                    { config = base.host or { }; }
-                    { config = profile.host or { }; }
-                  ];
-                }).config;
-              mergedUser =
-                (evalModules {
-                  modules = [
-                    userProfileOptions
-                    { config = base.user or { }; }
-                    { config = profile.user or { }; }
-                  ];
-                }).config;
-            in
-            {
-              host = mergedHost;
-              user = mergedUser;
-            };
-        in
-        if base == { } then profile else mergeProfile (fixProfile profiles base) profile;
       host =
         (evalModules {
           modules = [
             hostOptions
             { config = hostcfg; }
-            { config = profile.host or { }; }
           ];
         }).config;
       users = mapAttrs (
@@ -131,7 +93,6 @@ let
           modules = [
             userOptions
             { config = usercfg; }
-            { config = profile.user or { }; }
           ];
         }).config
       ) users';
@@ -151,9 +112,7 @@ let
       };
       modules = (attrValues coreModules) ++ (attrValues hostModules);
     };
-  fromHosts =
-    profiles: hosts: users:
-    mapAttrs (fromHost profiles users) hosts;
+  fromHosts = hosts: users: mapAttrs (fromHost users) hosts;
   fileSystemOptions = {
     options = {
       device = mkOption {
@@ -198,10 +157,6 @@ let
       system = mkOption {
         type = str;
       };
-      profile = mkOption {
-        type = str;
-        default = "";
-      };
       language = mkOption {
         type = str;
         default = "en_US.UTF-8";
@@ -221,45 +176,6 @@ let
     };
   };
 
-  hostProfileOptions = {
-    options = {
-      fileSystems = mkOption {
-        type = lazyAttrsOf types.fileSystem;
-        default = { };
-      };
-      autos = mkOption {
-        type = listOf str;
-        default = [ ];
-      };
-    };
-  };
-
-  userProfileOptions = {
-    options = {
-      autos = mkOption {
-        type = listOf str;
-        default = [ ];
-      };
-    };
-  };
-
-  profileOptions = {
-    options = {
-      base = mkOption {
-        type = str;
-        default = "";
-      };
-      host = mkOption {
-        type = types.hostProfile;
-        default = { };
-      };
-      user = mkOption {
-        type = types.userProfile;
-        default = { };
-      };
-    };
-  };
-
   types = {
     fileSystem = submodule [
       fileSystemOptions
@@ -269,15 +185,6 @@ let
     ];
     host = submodule [
       hostOptions
-    ];
-    userProfile = submodule [
-      userProfileOptions
-    ];
-    hostProfile = submodule [
-      hostProfileOptions
-    ];
-    profile = submodule [
-      profileOptions
     ];
   };
 in
@@ -297,14 +204,10 @@ in
         };
       };
     };
-    profiles = mkOption {
-      type = lazyAttrsOf types.profile;
-      default = { };
-    };
   };
 
   config = {
-    nixosConfigurations = fromHosts profiles config.hosts config.users;
+    nixosConfigurations = fromHosts config.hosts config.users;
     homeConfigurations = fromUsers config.users;
     outputs = {
       inherit nuxos;

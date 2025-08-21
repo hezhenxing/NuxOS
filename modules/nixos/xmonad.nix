@@ -2,6 +2,8 @@
 {
   imports = with nuxos.nixosModules; [
     lightdm
+    polkit
+    thunar
     xserver
   ];
   programs.i3lock.enable = true;
