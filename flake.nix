@@ -65,18 +65,18 @@
               done
             }
             find_flake_root
-            rm -f options.json home-options.json packages.json
+            rm -f data/{options.json,home-options.json,packages.json}
             echo "Fetching sources.json"
             dir=$(curl -sL https://github.com/wamserma/flake-programs-sqlite/raw/refs/heads/main/sources.json | jq -r '."${rev}".url | rtrimstr("/nixexprs.tar.xz")')
             url=https://releases.nixos.org$dir
             options_url=$url/options.json.br
             packages_url=$url/packages.json.br
             echo "Fetching and generating options.json"
-            curl -sL $options_url | brotli -dc | jq -f scripts/options.jq > options.json
+            curl -sL $options_url | brotli -dc | jq -f scripts/options.jq > data/options.json
             echo "Reading and generating home-options.json"
-            jq -f scripts/options.jq ${homeOptions}  > home-options.json
+            jq -f scripts/options.jq ${homeOptions}  > data/home-options.json
             echo "Fetching and generating packages.json"
-            curl -sL $packages_url | brotli -dc | jq -f scripts/packages.jq > packages.json
+            curl -sL $packages_url | brotli -dc | jq -f scripts/packages.jq > data/packages.json
           '';
         in
         with pkgs;

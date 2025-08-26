@@ -243,7 +243,6 @@
   "notify-osd": "services.notify-osd",
   "notmuch": "programs.notmuch",
   "numbat": "programs.numbat",
-  "numlock": "xsession.numlock",
   "nushell": "programs.nushell",
   "nyxt": "programs.nyxt",
   "obs-studio": "programs.obs-studio",

@@ -1,15 +1,40 @@
+# Order of option groups
+def groups:
+  [ "services"
+  , "services.displayManager"
+  , "services.desktopManager"
+  , "services.xserver"
+  , "services.xserver.displayManager"
+  , "services.xserver.desktopManager"
+  , "services.xserver.windowManager"
+  , "wayland.windowManager"
+  , "xsession.windowManager"
+  , "programs"
+  ]
+  ;
+
 def ordering:
-    if   startswith("services.") then 1
-    elif startswith("wayland.")  then 2
-    elif startswith("xsession.") then 3
-    elif startswith("programs.") then 4
-    else error
-    end;
+  . as $name
+  | groups
+  | reduce .[] as $group (
+      0;
+      if $name | startswith($group + ".")
+      then groups | index($group)
+      else .
+      end
+    )
+  ;
+
+def filter:
+  groups
+  | join("|")
+  | "^(" + . + ").[^<>.]+.enable$"
+  ;
 
 .
 | keys
 | map(
-  select(test("^(programs|services(.xserver)?|wayland|xsession)(.(display|window)Manager)?.[^<>.]+.enable$"))
+  select(test(filter))
   | split(".")
   | .[:-1]
   | {key: .[-1] | trimstr("\"") | ltrimstr("_") | ltrimstr("_"), value: join(".")}

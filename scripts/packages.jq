@@ -1,15 +1,33 @@
+# Order of package groups
+def groups:
+  [ "xfce"
+  , "kdePackages"
+  , "haskellPackages"
+  ]
+  ;
+
 def ordering:
-    if   startswith("xfce.") then 1
-    elif startswith("kdePackages.") then 2
-    elif startswith("haskellPackages.") then 3
-    elif contains(".") then error
-    else 0
-    end;
+  . as $name
+  | groups
+  | reduce .[] as $group (
+      0;
+      if $name | startswith($group + ".")
+      then groups | index($group)
+      else .
+      end
+    )
+  ;
+
+def filter:
+  groups
+  | join("|")
+  | "^((" + . + ").)?[^<>.]+$"
+  ;
 
 .packages
 | keys
 | map(
-  select(test("^((xfce|kdePackages|haskellPackages).)?[^<>.]+$"))
+  select(test(filter))
   | split(".")
   | {key: .[-1] | ltrimstr("_") | ltrimstr("_"), value: join(".")}
   )
