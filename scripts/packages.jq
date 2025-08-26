@@ -2,6 +2,10 @@
 def groups:
   [ "xfce"
   , "kdePackages"
+  , "mate"
+  , "deepin"
+  , "enlightenment"
+  , "elmPackages"
   , "haskellPackages"
   ]
   ;
