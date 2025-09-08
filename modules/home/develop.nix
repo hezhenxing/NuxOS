@@ -3,6 +3,7 @@
   imports = with nuxos.homeModules; [
     git
     nixfmt
+    nvf
     vscode
   ];
 

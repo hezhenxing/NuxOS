@@ -16,6 +16,10 @@
     nux = {
       url = "github:hezhenxing/nux";
     };
+    nvf = {
+      url = "github:notashelf/nvf";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs@{
@@ -24,6 +28,7 @@
       home-manager,
       stylix,
       nux,
+      nvf,
       ...
     }:
     flakelight ./. {
@@ -39,6 +44,7 @@
           inputs.home-manager = lib.mkDefault home-manager;
           inputs.stylix = lib.mkDefault stylix;
           inputs.nux = lib.mkDefault nux;
+          inputs.nvf = lib.mkDefault nvf;
           nixpkgs.config = {
             allowUnfree = true;
           };
