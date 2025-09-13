@@ -327,11 +327,11 @@
         "flakelight-haskell": "flakelight-haskell"
       },
       "locked": {
-        "lastModified": 1757581685,
-        "narHash": "sha256-WN5J7QqQflf+pDndRSNjkVPuiYjzsQyKlDr32tLa70s=",
+        "lastModified": 1757760918,
+        "narHash": "sha256-/9R9KOaXyYQkzRVVzrTSHgHRRFqtsAfQrQzzR2mdQ/k=",
         "owner": "hezhenxing",
         "repo": "nux",
-        "rev": "dcfb548004d17f4baef156a39bd7d582aa204c8f",
+        "rev": "2fda2f693b8118be2cb02a2967ba930f4d7bd0ab",
         "type": "github"
       },
       "original": {
