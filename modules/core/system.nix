@@ -12,6 +12,9 @@
 
     # Copy NuxOS configuration to /etc/nuxos if needed.
     activationScripts.nuxos.text = ''
+      if [[ ! -e /etc/NUXOS ]]; then
+        touch /etc/NUXOS
+      fi
       if [[ ! -e /etc/nuxos ]]; then
         cp -r "${src}" /etc/nuxos
       fi
@@ -21,7 +24,7 @@
   environment = {
     variables = {
       NUXOS = "true";
-      NUXOS_VERSION = "0.5";
+      NUXOS_VERSION = "0.6";
     };
     shells = with pkgs; [
       bash
