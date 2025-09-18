@@ -4,6 +4,7 @@ def groups:
   , "kdePackages"
   , "mate"
   , "enlightenment"
+  , "nodePackages"
   , "elmPackages"
   , "haskellPackages"
   ]
