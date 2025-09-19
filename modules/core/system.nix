@@ -6,6 +6,10 @@
   ...
 }:
 {
+  imports = [
+    inputs.flake-programs-sqlite.nixosModules.programs-sqlite
+  ];
+  programs.command-not-found.enable = true;
   system = {
     stateVersion = "25.11";
     nixos.label = "NuxOS";

@@ -2,7 +2,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   programs.zsh = {
     enable = true;
     # autosuggestion.enable = true;
@@ -20,5 +21,16 @@
         file = "p10k.zsh";
       }
     ];
+    initContent = ''
+      function command_not_found_handler() {
+        cmd=`command-not-found "$1" |& sed -n '3p'`
+        if [ -n "$cmd" ]; then
+          eval "$cmd --command \"$@:q\""
+        else
+          echo "command not found: $1" 1>&2
+          return 127
+        fi
+      }
+    '';
   };
 }

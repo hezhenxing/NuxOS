@@ -20,6 +20,10 @@
       url = "github:notashelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    flake-programs-sqlite = {
+      url = "github:wamserma/flake-programs-sqlite";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs@{
@@ -29,6 +33,7 @@
       stylix,
       nux,
       nvf,
+      flake-programs-sqlite,
       ...
     }:
     flakelight ./. {
@@ -45,6 +50,7 @@
           inputs.stylix = lib.mkDefault stylix;
           inputs.nux = lib.mkDefault nux;
           inputs.nvf = lib.mkDefault nvf;
+          inputs.flake-programs-sqlite = lib.mkDefault flake-programs-sqlite;
           nixpkgs.config = {
             allowUnfree = true;
           };
