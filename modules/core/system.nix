@@ -11,6 +11,14 @@
   ];
   programs.command-not-found.enable = true;
   nix.channel.enable = false;
+  programs.nh = {
+    enable = true;
+    clean = {
+      enable = true;
+      extraArgs = "--keep-since 7d --keep 5";
+    };
+    flake = "/etc/nuxos";
+  };
   system = {
     stateVersion = "25.11";
     nixos.label = "NuxOS";
