@@ -40,7 +40,7 @@
           done
           unsetopt shwordsplit
           echo "You chose package '$pkg'" 1>&2
-          nix-shell -p $pkg --command "$@:q"
+          nix shell nixpkgs#$pkg --command "''${@}"
         else
           echo "command not found: $1" 1>&2
           return 127
