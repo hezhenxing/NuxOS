@@ -11,6 +11,7 @@
   ];
   programs.command-not-found.enable = true;
   nix.channel.enable = false;
+  programs.zsh.enable = true;
   programs.nh = {
     enable = true;
     clean = {
@@ -38,6 +39,7 @@
     variables = {
       NUXOS = "true";
       NUXOS_VERSION = "0.6";
+      NIX_AUTO_RUN = 1;
     };
     shells = with pkgs; [
       bash
